@@ -112,7 +112,7 @@ export const checkAvailability = (bookingData, roomId, startTime, endTime) => {
     console.log('isAvailable' + isAvailable)
 }
 
-export const getBookingsForWeek = (bookingData, roomId, dateBooking) => {
+export const getBookingsForWeek = (bookingData, roomId, dateToday) => {
     function compare(a, b) {
         if (a.startTime < b.startTime) {
             return -1;
@@ -126,45 +126,84 @@ export const getBookingsForWeek = (bookingData, roomId, dateBooking) => {
     const filterRoomId = (bookingData.filter(item => item.roomId === roomId)).sort(compare)
 
     if (filterRoomId.length === 0) return console.log('Do not have room Id.')
-    console.log(filterRoomId)
+    console.log('allBookingOfRoom',filterRoomId)
 
-    const year = moment(dateBooking).year()
-    const month = moment(dateBooking).month()
-    const date = moment(dateBooking).date()
+    const year = moment(dateToday).year()
+    const month = moment(dateToday).month()
+    const date = moment(dateToday).date()
 
-    const thisWeekSunday = moment().year(year).month(month).date(date).set({'hour':0, 'minute':0, 'second':0}).weekday(0).format('YYYY-MM-DD HH:mm:ss')
-    const nextWeekSunday = moment().year(year).month(month).date(date+7).set({'hour':0, 'minute':0, 'second':0}).weekday(0).format('YYYY-MM-DD HH:mm:ss')
-    const next2WeekSunday = moment().year(year).month(month).date(date+14).set({'hour':0, 'minute':0, 'second':0}).weekday(0).format('YYYY-MM-DD HH:mm:ss')
-    console.log('thisWeekSunday: ' + thisWeekSunday)
-    console.log('nextWeekSunday: '+ nextWeekSunday)
-    console.log('next2WeekSunday: '+ next2WeekSunday)
-   
+    const thisWeekMonday = moment().year(year).month(month).date(date).set({'hour':0, 'minute':0, 'second':0}).weekday(1).format('YYYY-MM-DD')
+    const nextWeekMonday = moment().year(year).month(month).date(date+7).set({'hour':0, 'minute':0, 'second':0}).weekday(1).format('YYYY-MM-DD')
+    const next2WeekMonday = moment().year(year).month(month).date(date+14).set({'hour':0, 'minute':0, 'second':0}).weekday(1).format('YYYY-MM-DD')
+    console.log('thisWeekMonday: ' + thisWeekMonday)
+    console.log('nextWeekMonday: '+ nextWeekMonday)
+    console.log('next2WeekMonday: '+ next2WeekMonday)
+
+    let allBookingObj = {}
+    
+    const ExtractToDay = (i, obj, arr) => {
+
+        const dateStartTime = moment(i.startTime).date()
+        const monthStartTime = moment(i.startTime).month()
+        const yearStartTime = moment(i.startTime).year()
+    
+        let date3 = i.startTime
+        let x = 0
+        while (moment(date3).set({'hour':0, 'minute':0, 'second':0}) <= moment(i.endTime).set({'hour':0, 'minute':0, 'second':0})) {
+            date3 = moment().year(yearStartTime).month(monthStartTime).date(dateStartTime + x).set({'hour':0, 'minute':0, 'second':0})
+            let dateKey = moment().year(yearStartTime).month(monthStartTime).date(dateStartTime + x).set({'hour':0, 'minute':0, 'second':0}).format('YYYY-MM-DD')
+            obj[`${dateKey}`] = arr.filter(item => {       
+                return (
+                    moment(date3).format('MM DD') >= moment(item.startTime).format('MM DD')
+                    && moment(date3).format('MM DD') <= moment(item.endTime).format('MM DD')
+                )
+            })
+            x = x + 1   
+        }
+    }
+ 
+    for (const i of filterRoomId) {
+        ExtractToDay(i, allBookingObj, filterRoomId)
+    }
 
     let allBookingToday = []
     for (const i of filterRoomId) {
-        if(moment(dateBooking).isSameOrAfter(i.startTime, 'day') && moment(dateBooking).isSameOrBefore(i.endTime, 'day')){
+        if(moment(dateToday).isSameOrAfter(i.startTime, 'day') && moment(dateToday).isSameOrBefore(i.endTime, 'day')){
             allBookingToday.push(i)
         }    
     }
 
-    let allBookingThisWeek = []
-    for (const i of filterRoomId) {
-        if(i.endTime > thisWeekSunday && i.startTime < nextWeekSunday){            
-            allBookingThisWeek.push(i)
+    let allArrKey = Object.keys(allBookingObj)
+    let arrKeyThisWeek = []
+    for (const i of allArrKey) {
+        if(i >= thisWeekMonday && i < nextWeekMonday){            
+            arrKeyThisWeek.push(i)
+        }     
+    }
+    
+
+    let arrKeyNextWeek = []
+    for (const i of allArrKey) {
+        if(i >= nextWeekMonday && i < next2WeekMonday){
+            arrKeyNextWeek.push(i)
         }
     }
 
-    let allBookingNextWeek = []
-    for (const i of filterRoomId) {
-        if(i.endTime > nextWeekSunday && i.startTime < next2WeekSunday){
-            allBookingNextWeek.push(i)
-        }
+    let allBookingThisWeekObj = {}
+    for(const i of arrKeyThisWeek){
+        allBookingThisWeekObj[i] = allBookingObj[i]
+    }
+
+    let allBookingNextWeekObj = {}
+    for(const i of arrKeyNextWeek){
+        allBookingNextWeekObj[i] = allBookingObj[i]
     }
 
     return {
         allBookingToday: allBookingToday,
-        allBookingThisWeek: allBookingThisWeek,
-        allBookingNextWeek: allBookingNextWeek,
+        allBookingThisWeek: allBookingThisWeekObj,
+        allBookingNextWeek: allBookingNextWeekObj,
+        //allBooking: allBookingObj
     }
 } 
 
