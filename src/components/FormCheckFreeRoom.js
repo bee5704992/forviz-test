@@ -19,7 +19,12 @@ const FormCheckFreeRoom = ({room}) => {
 
     function funcCheck(value) {
         if(value.length !== 0){
-            checkAvailability(bookingData, room, arrStartToEnd[0], arrStartToEnd[1])
+            const isAvailable = checkAvailability(bookingData, room, arrStartToEnd[0], arrStartToEnd[1])
+            if(isAvailable){
+                alert(`ํYou can booking at that time. (${arrStartToEnd[0]} - ${arrStartToEnd[1]})`)
+            }else{
+                alert(`You can't booking Because the room is full.`)
+            }
         }
     }
 

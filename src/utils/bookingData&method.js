@@ -94,26 +94,21 @@ export const checkAvailability = (bookingData, roomId, startTime, endTime) => {
     let isAvailable = false;
     if (startTime < filterRoomId[0].startTime && endTime <= filterRoomId[0].startTime) {
         isAvailable = true;
-        console.log(isAvailable)
-        return;
+        
+        return isAvailable;
     }
     if (startTime >= filterRoomId[filterRoomId.length - 1].endTime) {
         isAvailable = true;
-        console.log(isAvailable)
-        return;
+        
+        return isAvailable;
     }
     for (let i = 0; i < filterRoomId.length; i++) {
         if (startTime >= filterRoomId[i].endTime && endTime <= filterRoomId[i + 1].startTime) {
             isAvailable = true;
             break;
         }
-        console.log(isAvailable, i)
     }
-    if(isAvailable){
-        alert(`ํYou can booking at that time. (${startTime} - ${endTime})`)
-    }else{
-        alert(`You can't booking Because the room is full.`)
-    }
+    return isAvailable
 }
 
 export const getBookingsForWeek = (bookingData, roomId, dateToday) => {
