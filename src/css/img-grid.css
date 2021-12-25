@@ -4,15 +4,21 @@
 }
 .gallery{
     margin: 0 auto;
-    display: grid;
-    grid-gap: 4px;
-    grid-template-columns: repeat(auto-fit,minmax(25px,1fr));
-
-    grid-auto-rows: 150px;
-    grid-auto-flow: dense;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: stretch;
+}
+.gallery div{
+    margin: 2px;
+    flex-grow: 1;
+}
+.last-img{
+    flex-grow: 0 !important;
 }
 .gallery div img{
     width: 100%;
-    height: 100%;
+    height: 150px;
     object-fit: cover;
+    image-rendering: optimizeSpeed;
+    image-resolution: 72dpi;
 }

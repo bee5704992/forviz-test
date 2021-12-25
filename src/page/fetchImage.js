@@ -21,8 +21,8 @@ const FetchImg = () => {
         <div className='gallery' style={{padding: '0 4%'}}>
             {
                 img.length === 0 ? null 
-                : img.map((item)=>(
-                    <div style={{gridColumn:`span ${Math.round(150 * (item.width / item.height) / 25)}`}} key={item.download_url}><img src={item.download_url} alt='' /></div>
+                : img.map((item, index)=>(
+                    <div className={index === img.length - 1 ? 'last-img' : ''} key={item.download_url}><img src={item.download_url} alt='' /></div>
                 ))
             }
         </div>
