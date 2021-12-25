@@ -109,7 +109,11 @@ export const checkAvailability = (bookingData, roomId, startTime, endTime) => {
         }
         console.log(isAvailable, i)
     }
-    console.log('isAvailable' + isAvailable)
+    if(isAvailable){
+        alert(`ํYou can booking at that time. (${startTime} - ${endTime})`)
+    }else{
+        alert(`You can't booking Because the room is full.`)
+    }
 }
 
 export const getBookingsForWeek = (bookingData, roomId, dateToday) => {
@@ -132,12 +136,12 @@ export const getBookingsForWeek = (bookingData, roomId, dateToday) => {
     const month = moment(dateToday).month()
     const date = moment(dateToday).date()
 
-    const thisWeekMonday = moment().year(year).month(month).date(date).set({'hour':0, 'minute':0, 'second':0}).weekday(1).format('YYYY-MM-DD')
-    const nextWeekMonday = moment().year(year).month(month).date(date+7).set({'hour':0, 'minute':0, 'second':0}).weekday(1).format('YYYY-MM-DD')
-    const next2WeekMonday = moment().year(year).month(month).date(date+14).set({'hour':0, 'minute':0, 'second':0}).weekday(1).format('YYYY-MM-DD')
-    console.log('thisWeekMonday: ' + thisWeekMonday)
-    console.log('nextWeekMonday: '+ nextWeekMonday)
-    console.log('next2WeekMonday: '+ next2WeekMonday)
+    const thisWeekSunday = moment().year(year).month(month).date(date).set({'hour':0, 'minute':0, 'second':0}).weekday(0).format('YYYY-MM-DD')
+    const nextWeekSunday = moment().year(year).month(month).date(date+7).set({'hour':0, 'minute':0, 'second':0}).weekday(0).format('YYYY-MM-DD')
+    const next2WeekSunday = moment().year(year).month(month).date(date+14).set({'hour':0, 'minute':0, 'second':0}).weekday(0).format('YYYY-MM-DD')
+    console.log('thisWeekSunday: ' + thisWeekSunday)
+    console.log('nextWeekSunday: '+ nextWeekSunday)
+    console.log('next2WeekSunday: '+ next2WeekSunday)
 
     let allBookingObj = {}
     
@@ -174,18 +178,23 @@ export const getBookingsForWeek = (bookingData, roomId, dateToday) => {
     }
 
     let allArrKey = Object.keys(allBookingObj)
+
     let arrKeyThisWeek = []
     for (const i of allArrKey) {
-        if(i >= thisWeekMonday && i < nextWeekMonday){            
+        if(i >= thisWeekSunday && i < nextWeekSunday){            
             arrKeyThisWeek.push(i)
         }     
     }
-    
-
     let arrKeyNextWeek = []
     for (const i of allArrKey) {
-        if(i >= nextWeekMonday && i < next2WeekMonday){
+        if(i >= nextWeekSunday && i < next2WeekSunday){
             arrKeyNextWeek.push(i)
+        }
+    }
+    let arrKeyThisMonth = []
+    for (const i of allArrKey) {
+        if(moment(i).isSame(dateToday, 'month')){
+            arrKeyThisMonth.push(i)
         }
     }
 
@@ -193,17 +202,21 @@ export const getBookingsForWeek = (bookingData, roomId, dateToday) => {
     for(const i of arrKeyThisWeek){
         allBookingThisWeekObj[i] = allBookingObj[i]
     }
-
     let allBookingNextWeekObj = {}
     for(const i of arrKeyNextWeek){
         allBookingNextWeekObj[i] = allBookingObj[i]
+    }
+    let allBookingThisMonthObj = {}
+    for(const i of arrKeyThisMonth){
+        allBookingThisMonthObj[i] = allBookingObj[i]
     }
 
     return {
         allBookingToday: allBookingToday,
         allBookingThisWeek: allBookingThisWeekObj,
         allBookingNextWeek: allBookingNextWeekObj,
+        allBookingThisMonth: allBookingThisMonthObj,
         //allBooking: allBookingObj
     }
-} 
+}
 
