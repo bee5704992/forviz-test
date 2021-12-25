@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route path='/fetchImg' element={<FetchImg />} />
         <Route exact path='/' element={<Index />} />
-        <Route path='booking' element={<Booking/>} />
+        <Route path='/booking' element={<Booking/>} />
       </Routes>
     </Router>
   );
